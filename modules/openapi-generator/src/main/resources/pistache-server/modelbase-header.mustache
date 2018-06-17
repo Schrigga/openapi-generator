@@ -26,7 +26,7 @@ public:
     virtual void validate() = 0;
 
     virtual nlohmann::json toJson() const = 0;
-    virtual void fromJson(nlohmann::json& json) = 0;
+    virtual void fromJson(nlohmann::json const& json) = 0;
 
     static std::string toJson(  std::string const& value );
     static std::string toJson(  std::time_t const& value );
