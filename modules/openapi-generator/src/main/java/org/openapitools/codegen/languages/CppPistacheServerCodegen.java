@@ -78,7 +78,7 @@ public class CppPistacheServerCodegen extends AbstractCppCodegen {
 
         cliOptions.clear();
 
-        reservedWords = new HashSet<>();
+       // reservedWords = new HashSet<>();
 
         supportingFiles.add(new SupportingFile("modelbase-header.mustache", "model", "ModelBase.h"));
         supportingFiles.add(new SupportingFile("modelbase-source.mustache", "model", "ModelBase.cpp"));
@@ -284,9 +284,12 @@ public class CppPistacheServerCodegen extends AbstractCppCodegen {
         String openAPIType = getSchemaType(p);
 
         if (ModelUtils.isArraySchema(p)) {
+            System.out.println("[287]: Array schema found: ");
             ArraySchema ap = (ArraySchema) p;
             Schema inner = ap.getItems();
-            return getSchemaType(p) + "<" + getTypeDeclaration(inner) + ">";
+            String output = getSchemaType(p) + "<" + getTypeDeclaration(inner) + ">";
+            System.out.println("[291]: output is: " + output );
+            return output;
         }
         if (ModelUtils.isMapSchema(p)) {
             Schema inner = (Schema) p.getAdditionalProperties();
@@ -299,7 +302,7 @@ public class CppPistacheServerCodegen extends AbstractCppCodegen {
             return toModelName(openAPIType);
         }
 
-        return openAPIType;
+        return "std::shared_ptr<" + openAPIType + ">";
     }
 
     @Override
@@ -369,9 +372,13 @@ public class CppPistacheServerCodegen extends AbstractCppCodegen {
         String openAPIType = super.getSchemaType(p);
         String type = null;
         if (typeMapping.containsKey(openAPIType)) {
-            type = typeMapping.get(openAPIType);
-            if (languageSpecificPrimitives.contains(type))
+            System.out.println("[372] openAPIType: " + openAPIType);
+           type = typeMapping.get(openAPIType);
+            System.out.println("[373] type is: " + type );
+            if (languageSpecificPrimitives.contains(type)) {
+                System.out.println("\tis primitive --> " + toModelName(type));
                 return toModelName(type);
+            }
         } else
             type = openAPIType;
         return toModelName(type);

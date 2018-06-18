@@ -53,7 +53,13 @@ void {{classname}}::{{operationIdSnakeCase}}_handler(const Pistache::Rest::Reque
     // Getting the body param
     {{#bodyParam}}
     {{^isPrimitiveType}}
-    {{baseType}} {{paramName}};{{/isPrimitiveType}}
+    {{#isListContainer}}
+    {{baseType}}<std::shared_ptr<{{baseName}}> > {{paramName}};
+    {{/isListContainer}}
+    {{^isListContainer}}
+    auto {{paramName}} = std::make_shared<{{baseName}}>();
+    {{/isListContainer}}
+    {{/isPrimitiveType}}
     {{#isPrimitiveType}}
     {{dataType}} {{paramName}};
     {{/isPrimitiveType}}
@@ -75,11 +81,29 @@ void {{classname}}::{{operationIdSnakeCase}}_handler(const Pistache::Rest::Reque
     {{#bodyParam}}
       nlohmann::json request_body = nlohmann::json::parse(request.body());
     {{^isPrimitiveType}}
-      {{paramName}}.fromJson(request_body);
+      {{^isListContainer}}
+      {{paramName}}->fromJson(request_body);
+      {{/isListContainer}}
+      {{#isListContainer}}
+    for( auto& item : request_body) {
+        auto newItem = std::make_shared<{{baseName}}>();
+        *newItem = item;
+        {{paramName}}.push_back( newItem );
+    }
+      {{/isListContainer}}
     {{/isPrimitiveType}}
     {{#isPrimitiveType}}
+      {{#isListContainer}}
+    for( auto& item : request_body) {
+        auto newItem = std::make_shared<{{baseName}}>();
+        *newItem = item;
+        {{paramName}}.push_back( newItem );
+    }
+      {{/isListContainer}}
+      {{^isListContainer}}
       // The conversion is done automatically by the json library
       {{paramName}} = request_body;
+      {{/isListContainer}}
     {{/isPrimitiveType}}
     {{/bodyParam}}
     {{/hasBodyParam}}

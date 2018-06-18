@@ -83,8 +83,9 @@ void {{classname}}::fromJson(nlohmann::json const& val)
             }
             else
             {
-                auto newItem = {{{items.datatype}}}({{{items.defaultValue}}});
-                newItem.fromJson(item);
+                //auto newItem = {{{items.datatype}}}({{{items.defaultValue}}});
+                auto newItem = {{{items.dataType}}}();
+                newItem->fromJson(item);
                 m_{{name}}.push_back( newItem );
             }
             {{/items.isDateTime}}{{/items.isString}}{{/isPrimitiveType}}
@@ -99,8 +100,9 @@ void {{classname}}::fromJson(nlohmann::json const& val)
         {{/isString}}{{^isString}}{{#isDateTime}}{{setter}}(val.at("{{baseName}}"));
         {{/isDateTime}}{{^isDateTime}}if(!val["{{baseName}}"].is_null())
         {
-            auto newItem = {{{dataType}}}({{{defaultValue}}});
-            newItem.fromJson(val["{{baseName}}"]);
+            //auto newItem = {{{dataType}}}({{{defaultValue}}});
+            auto newItem = {{{dataType}}}();
+            newItem->fromJson(val["{{baseName}}"]);
             {{setter}}( newItem );
         }
         {{/isDateTime}}{{/isString}}

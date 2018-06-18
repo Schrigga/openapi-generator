@@ -34,7 +34,7 @@ public:
     static int64_t toJson( int64_t const value );
     static double toJson( double const value );
     static bool toJson( bool const value );
-    static nlohmann::json toJson(ModelBase const& content );
+    static nlohmann::json toJson(std::shared_ptr<ModelBase> const& content );
 
 };
 
